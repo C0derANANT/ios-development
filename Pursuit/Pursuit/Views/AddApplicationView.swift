@@ -12,6 +12,7 @@ struct AddApplicationView: View {
     @State private var status = ApplicationStatus.applied
     @State private var dateApplied = Date.now
     @State private var notes = ""
+    @State private var isShowingSaveError = false
 
     /// Company and role are required; everything else is optional.
     private var canSave: Bool {
@@ -61,6 +62,11 @@ struct AddApplicationView: View {
                         .disabled(!canSave)
                 }
             }
+            .alert("Couldn't save this application", isPresented: $isShowingSaveError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Nothing was lost from the form. Please try again.")
+            }
         }
     }
 
@@ -74,7 +80,16 @@ struct AddApplicationView: View {
             notes: notes.trimmed
         )
         modelContext.insert(application)
-        dismiss()
+
+        // SwiftData autosaves on its own schedule, so a crash or force-quit
+        // right after tapping Save could lose the entry. Write to disk now.
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            modelContext.rollback()
+            isShowingSaveError = true
+        }
     }
 }
 

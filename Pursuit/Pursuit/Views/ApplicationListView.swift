@@ -46,6 +46,9 @@ struct ApplicationListView: View {
         for index in offsets {
             modelContext.delete(applications[index])
         }
+        // Write the deletion to disk now. If this fails, the deletion stays
+        // pending and SwiftData's autosave retries it later.
+        try? modelContext.save()
     }
 }
 
