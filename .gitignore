@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Xcode: per-user state that should never be shared
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Build output
+build/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Secrets (API keys etc. go here, never in the repo)
+Secrets.xcconfig
+*.env
