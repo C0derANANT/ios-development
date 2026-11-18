@@ -1,18 +1,35 @@
 import SwiftData
 import SwiftUI
 
-/// A form, shown as a sheet, for logging a new application.
-struct AddApplicationView: View {
+/// A form, shown as a sheet, for adding a new application or editing one.
+struct ApplicationFormView: View {
+    /// The application being edited, or nil when adding a new one.
+    let application: JobApplication?
+
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @State private var company = ""
-    @State private var role = ""
-    @State private var location = ""
-    @State private var status = ApplicationStatus.applied
-    @State private var dateApplied = Date.now
-    @State private var notes = ""
+    @State private var company: String
+    @State private var role: String
+    @State private var location: String
+    @State private var status: ApplicationStatus
+    @State private var dateApplied: Date
+    @State private var notes: String
     @State private var isShowingSaveError = false
+
+    /// Fills the form from `application` when editing, or leaves it blank when adding.
+    ///
+    /// `_company` (with the underscore) is the `@State` wrapper itself. Setting
+    /// it here gives the field its starting value before the screen appears.
+    init(application: JobApplication? = nil) {
+        self.application = application
+        _company = State(initialValue: application?.company ?? "")
+        _role = State(initialValue: application?.role ?? "")
+        _location = State(initialValue: application?.location ?? "")
+        _status = State(initialValue: application?.status ?? .applied)
+        _dateApplied = State(initialValue: application?.dateApplied ?? .now)
+        _notes = State(initialValue: application?.notes ?? "")
+    }
 
     /// Company and role are required; everything else is optional.
     private var canSave: Bool {
@@ -51,7 +68,7 @@ struct AddApplicationView: View {
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("New Application")
+            .navigationTitle(application == nil ? "New Application" : "Edit Application")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -71,15 +88,25 @@ struct AddApplicationView: View {
     }
 
     private func save() {
-        let application = JobApplication(
-            company: company.trimmed,
-            role: role.trimmed,
-            location: location.trimmed,
-            status: status,
-            dateApplied: dateApplied,
-            notes: notes.trimmed
-        )
-        modelContext.insert(application)
+        if let application {
+            application.company = company.trimmed
+            application.role = role.trimmed
+            application.location = location.trimmed
+            application.notes = notes.trimmed
+            // Goes through move(to:) so a status change lands in the history.
+            application.move(to: status)
+            application.setDateApplied(dateApplied)
+        } else {
+            let application = JobApplication(
+                company: company.trimmed,
+                role: role.trimmed,
+                location: location.trimmed,
+                status: status,
+                dateApplied: dateApplied,
+                notes: notes.trimmed
+            )
+            modelContext.insert(application)
+        }
 
         // SwiftData autosaves on its own schedule, so a crash or force-quit
         // right after tapping Save could lose the entry. Write to disk now.
@@ -100,7 +127,12 @@ private extension String {
     }
 }
 
-#Preview {
-    AddApplicationView()
+#Preview("Add") {
+    ApplicationFormView()
         .modelContainer(for: JobApplication.self, inMemory: true)
+}
+
+#Preview("Edit") {
+    ApplicationFormView(application: SampleData.previewApplication)
+        .modelContainer(SampleData.previewContainer)
 }

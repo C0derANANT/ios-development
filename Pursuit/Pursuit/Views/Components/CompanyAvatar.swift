@@ -6,15 +6,16 @@ import SwiftUI
 /// always gets the same color on every launch.
 struct CompanyAvatar: View {
     let name: String
+    var size: CGFloat = 44
 
     private static let palette: [Color] = [.blue, .indigo, .purple, .pink, .orange, .teal, .green, .brown]
 
     var body: some View {
         Text(initial)
-            .font(.headline)
+            .font(.system(size: size * 0.42, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
-            .frame(width: 40, height: 40)
-            .background(color.gradient, in: .rect(cornerRadius: 10))
+            .frame(width: size, height: size)
+            .background(Self.color(for: name).gradient, in: .rect(cornerRadius: size * 0.28))
             .accessibilityHidden(true)
     }
 
@@ -26,9 +27,9 @@ struct CompanyAvatar: View {
     ///
     /// Swift's built-in `hashValue` changes every time the app launches, so it
     /// can't be used here. A plain sum is stable across launches.
-    private var color: Color {
+    static func color(for name: String) -> Color {
         let total = name.unicodeScalars.reduce(0) { $0 + Int($1.value) }
-        return Self.palette[total % Self.palette.count]
+        return palette[total % palette.count]
     }
 }
 
@@ -36,7 +37,7 @@ struct CompanyAvatar: View {
     HStack {
         CompanyAvatar(name: "Swiggy")
         CompanyAvatar(name: "Razorpay")
-        CompanyAvatar(name: "Zoho")
+        CompanyAvatar(name: "Zoho", size: 76)
         CompanyAvatar(name: "")
     }
 }

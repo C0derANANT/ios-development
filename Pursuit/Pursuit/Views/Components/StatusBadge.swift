@@ -5,12 +5,18 @@ struct StatusBadge: View {
     let status: ApplicationStatus
 
     var body: some View {
-        Text(status.title)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(status.color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(status.color.opacity(0.15), in: .capsule)
+        HStack(spacing: 4) {
+            Image(systemName: status.systemImage)
+                .imageScale(.small)
+                // When the status changes, the old icon morphs into the new one.
+                .contentTransition(.symbolEffect(.replace))
+            Text(status.title)
+        }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(status.color)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(status.color.opacity(0.15), in: .capsule)
     }
 }
 
