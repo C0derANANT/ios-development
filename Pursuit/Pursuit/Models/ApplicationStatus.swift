@@ -4,7 +4,7 @@ import SwiftUI
 ///
 /// The raw `String` value is what gets saved to disk, so renaming a case later
 /// would break existing data. Add new cases instead of renaming old ones.
-enum ApplicationStatus: String, Codable, CaseIterable, Identifiable {
+nonisolated enum ApplicationStatus: String, Codable, CaseIterable, Identifiable {
     case wishlist
     case applied
     case interviewing
@@ -42,6 +42,36 @@ enum ApplicationStatus: String, Codable, CaseIterable, Identifiable {
         case .interviewing: .orange
         case .offer: .green
         case .rejected: .red
+        }
+    }
+
+    /// Sentence shown in the history timeline.
+    var timelineTitle: String {
+        switch self {
+        case .wishlist: "Saved to wishlist"
+        case .applied: "Applied"
+        case .interviewing: "Started interviewing"
+        case .offer: "Got an offer"
+        case .rejected: "Marked as rejected"
+        }
+    }
+
+    /// The main road an application travels. Rejected isn't on it, because
+    /// a rejection can happen at any stage.
+    static let pipeline: [ApplicationStatus] = [.wishlist, .applied, .interviewing, .offer]
+
+    /// Position on the `pipeline` (0 = wishlist, 3 = offer), or nil for rejected.
+    var pipelineIndex: Int? {
+        Self.pipeline.firstIndex(of: self)
+    }
+
+    /// The stage that normally comes next, or nil at the end of the road.
+    var next: ApplicationStatus? {
+        switch self {
+        case .wishlist: .applied
+        case .applied: .interviewing
+        case .interviewing: .offer
+        case .offer, .rejected: nil
         }
     }
 }
