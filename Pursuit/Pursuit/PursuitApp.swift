@@ -10,7 +10,7 @@ import SwiftUI
 struct PursuitApp: App {
     var body: some Scene {
         WindowGroup {
-            ApplicationListView()
+            HomeView()
         }
         .modelContainer(for: JobApplication.self)
     }

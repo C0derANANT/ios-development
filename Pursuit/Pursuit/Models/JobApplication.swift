@@ -108,4 +108,14 @@ final class JobApplication {
     var companyAndLocation: String {
         location.isEmpty ? company : "\(company) · \(location)"
     }
+
+    /// True when `query` appears in the company, role, location or notes.
+    ///
+    /// `localizedStandardContains` is the comparison Finder and Spotlight use:
+    /// it ignores capitals and accents, so "zoho" finds "Zoho".
+    func matches(_ query: String) -> Bool {
+        let query = query.trimmingCharacters(in: .whitespaces)
+        guard !query.isEmpty else { return true }
+        return [company, role, location, notes].contains { $0.localizedStandardContains(query) }
+    }
 }

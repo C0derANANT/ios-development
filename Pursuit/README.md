@@ -19,10 +19,11 @@ through its stages, and see the whole pipeline at a glance.
 - [x] Detail screen: tappable stage stepper, full status history, notes, offer celebration
 - [x] Edit any application
 - [x] Haptic feedback, animated numbers and a zoom transition from card to detail
+- [x] Pipeline board: long-press a card and drag it into another stage's lane
+- [x] Search across company, role, location and notes
+- [x] Sort by date applied, recently updated, or company name (remembered between launches)
 - [x] Light and dark mode
 - [x] Data saved on device with SwiftData (no account, works offline)
-- [ ] Pipeline board: drag cards between stages
-- [ ] Search
 - [ ] Insights screen with charts (applications per week, reply rate)
 - [ ] Follow-up nudges via local notifications
 - [ ] Home-screen widget
@@ -48,12 +49,14 @@ Pursuit/
 │   ├── ApplicationStatus.swift   The stages an application moves through
 │   └── StatusChange.swift        One entry in an application's history
 ├── Views/
-│   ├── ApplicationListView.swift    Home screen: stats, filters, cards
+│   ├── HomeView.swift               Home screen: list or board, search, sort
+│   ├── BoardView.swift              Pipeline board with drag and drop
 │   ├── ApplicationDetailView.swift  Stepper, history and notes for one application
 │   ├── ApplicationFormView.swift    Add and edit form
-│   └── Components/                  Reusable pieces: card, badge, avatar,
+│   └── Components/                  Reusable pieces: cards, badge, avatar,
 │                                    stats header, filter bar, stepper
 └── Support/
+    ├── HomeOptions.swift         List/board layout and sort orders
     ├── CardStyle.swift           Shared card look and press animation
     ├── Date+Relative.swift       "Today", "Yesterday", "3d ago"
     └── SampleData.swift          Fake data for Xcode previews
